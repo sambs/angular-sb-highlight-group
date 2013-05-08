@@ -1,0 +1,22 @@
+{
+  "name": "hl-group",
+  "version": "0.0.1",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-karma": "~0.4.4",
+    "angular": "https://github.com/angular/bower-angular.git"
+  },
+  "main": "lib/hl-group.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:sambs/angular-hl-group.git"
+  },
+  "author": "Sam Barnes",
+  "license": "private",
+  "readmeFilename": "Readme.md"
+}
