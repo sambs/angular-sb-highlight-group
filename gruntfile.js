@@ -3,9 +3,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
-      files: ['gruntfile.js', '/lib/*.js'],
+      files: ['gruntfile.js', '/src/*.js'],
       options: {
-        // options here to override JSHint defaults
         globals: {
           jQuery: true,
           console: true,
@@ -14,21 +13,32 @@ module.exports = function(grunt) {
         }
       }
     },
-    //watch: {
-      //scripts: {
-        //files: ['<%= jshint.files %>'],
-        //tasks: ['jshint']
-      //}
-    //},
+    jsonlint: {
+      files: ['bower.json', 'package.json']
+    },
     karma: {
       develop: {
         configFile: 'karma.conf.js',
-        autoWatch: true
+        background: true
       },
       all: {
         configFile: 'karma.conf.js',
         singleRun: true,
         browsers: ['Chrome', 'Firefox', 'Opera']
+      }
+    },
+    watch: {
+      jshint: {
+        files: ['<%= jshint.files %>'],
+        tasks: ['jshint']
+      },
+      jsonlint: {
+        files: ['<%= jsonlint.files %>'],
+        tasks: ['jsonlint']
+      },
+      karma: {
+        files: ['src/*.js', 'test/*'],
+        tasks: ['karma:develop:run']
       }
     },
     connect: {
@@ -51,22 +61,23 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-jsonlint');
   grunt.loadNpmTasks('grunt-karma');
-  //grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
 
   grunt.registerTask('develop', [
     'jshint',
+    'jsonlint',
     'connect:test',
-    'karma:develop'
+    'karma:develop',
+    'watch'
   ]);
 
-  grunt.registerTask('test:all', [
+  grunt.registerTask('test', [
     'jshint',
-    'connect:test',
+    'jsonlint',
+    //'connect:test',
     'karma:all'
   ]);
-  
-  grunt.registerTask('default', ['develop']);
 };

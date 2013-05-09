@@ -28,7 +28,7 @@ reporters = ['progress'];
 port = 8001;
 
 // cli runner port
-runnerPort = 8002;
+runnerPort = 9100;
 
 // enable / disable colors in the output (reporters and logs)
 colors = true;
@@ -51,7 +51,7 @@ autoWatch = false;
 browsers = ['Chrome'];
 
 // If browser does not capture in given timeout [ms], kill it
-captureTimeout = 5000;
+captureTimeout = 8000;
 
 // Continuous Integration mode
 // if true, it capture browsers, run tests and exit
