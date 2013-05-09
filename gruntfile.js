@@ -21,9 +21,14 @@ module.exports = function(grunt) {
       //}
     //},
     karma: {
-      unit: {
+      develop: {
         configFile: 'karma.conf.js',
         autoWatch: true
+      },
+      all: {
+        configFile: 'karma.conf.js',
+        singleRun: true,
+        browsers: ['Chrome', 'Firefox', 'Opera']
       }
     },
     connect: {
@@ -51,11 +56,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-connect');
 
-  grunt.registerTask('test', [
+  grunt.registerTask('develop', [
     'jshint',
     'connect:test',
-    'karma'
+    'karma:develop'
+  ]);
+
+  grunt.registerTask('test:all', [
+    'jshint',
+    'connect:test',
+    'karma:all'
   ]);
   
-  grunt.registerTask('default', ['test']);
+  grunt.registerTask('default', ['develop']);
 };

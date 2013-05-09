@@ -3,131 +3,49 @@ angular.module('HlGroup', [])
   .directive('hlGroup', function ($http) {
     return {
       restrict: 'A',
-      // asks for $scope to fool the BC controller module
-      controller: ['$scope', function () {
-        var items = this.items = [];
-
-        this.addItem = function ($scope, $element) {
-          items.push($scope);
-
-          $element.on('mouseover', function (e) {
-            $element.closest('[hl-group]').find('[hl-item]').each(function (i, el) {
-              $elScope = angular.element(el).scope();
-              $scope.$apply(function () {
-                $elScope.highlighted = $elScope === $scope;
-              });
-            });
-
-            //for (var i = 0; i < items.length; i++) {
-              //$scope.$apply(function () {
-                //if (items[i] !== $scope) {
-                  //items[i].highlighted = false;
-                //} else {
-                  //items[i].highlighted = true;
-                //}
-              //});
-            //}
-          });
-        };
-        this.removeItem = function ($scope, $element) {
-          var i = items.indexOf($scope);
-          if (i != -1) {
-            items.splice(i, 1);
-          }
-          $element.off('mouseover');
-        };
-      }],
-
-      link: function ($scope, $element, attrs, ctrl) {
+      priority: 9,
+      controller: function () {
+        this.hlClass = 'highlight';
+      }, 
+      link: function (scope, element, attrs, ctrl) {
 
         function keyHandler (e) {
           //if (!this.enabled) return;
-          var found, index, $hlItems;
+          var index, cElement, hlItems;
 
           switch (e.which) {
             case 38: // Up arrow
-              $hlItems = $element.find('[hl-item]:visible');
-              $hlItems.each(function (i, el) {
-                if (found) return;
-                if (angular.element(el).scope().highlighted) {
-                  found = el;
-                  if (i > 0) {
-                    $scope.$apply(function () {
-                      angular.element($hlItems[i - 1]).scope().highlighted = true;
-                      angular.element(el).scope().highlighted = false;
-                    });
-                  }
+              cElement = element.find('.'+ctrl.hlClass+'[hl-item]');
+              if (cElement.length == 1) {
+                hlItems = element.find('[hl-item]:visible');
+                index = hlItems.index(cElement);
+                if (index > 0) {
+                  cElement.removeClass(ctrl.hlClass);
+                  hlItems.eq(index - 1).addClass(ctrl.hlClass);
                 }
-              });
-              if (!found) {
-                $scope.$apply(function () {
-                  angular.element($hlItems[$hlItems.length - 1]).scope().highlighted = true;
-                });
+              } else {
+                // Remove class just incase more than one item is currently highlighted
+                cElement.removeClass(ctrl.hlClass);
+                // Highlight the last item in the group
+                element.find('[hl-item]:visible').last().addClass(ctrl.hlClass);
               }
-              $element.find('[hl-item]:hidden').each(function (i, el) {
-                $scope.$apply(function () {
-                  angular.element(el).scope().highlighted = false;
-                });
-              });
-              //for (i = 0; i < ctrl.items.length; i++) {
-                //if (ctrl.items[i].highlighted) {
-                  //found = true;
-                  //if (i > 0) {
-                    //$scope.$apply(function () {
-                      //ctrl.items[i - 1].highlighted = true;
-                      //ctrl.items[i].highlighted = false;
-                    //});
-                  //}
-                  //break;
-                //}
-              //}
-              //if (!found) {
-                //$scope.$apply(function () {
-                  //ctrl.items[ctrl.items.length - 1].highlighted = true;
-                //});
-              //}
               return false;
+              
             case 40: // Down arrow
-              $hlItems = $element.find('[hl-item]:visible');
-              $hlItems.each(function (i, el) {
-                if (found) return;
-                if (angular.element(el).scope().highlighted) {
-                  found = el;
-                  if (i < $hlItems.length - 1) {
-                    $scope.$apply(function () {
-                      angular.element($hlItems[i + 1]).scope().highlighted = true;
-                      angular.element(el).scope().highlighted = false;
-                    });
-                  }
+              cElement = element.find('.'+ctrl.hlClass+'[hl-item]');
+              if (cElement.length == 1) {
+                hlItems = element.find('[hl-item]:visible');
+                index = hlItems.index(cElement);
+                if (index < hlItems.length - 1) {
+                  cElement.removeClass(ctrl.hlClass);
+                  hlItems.eq(index + 1).addClass(ctrl.hlClass);
                 }
-              });
-              if (!found) {
-                $scope.$apply(function () {
-                  angular.element($hlItems[0]).scope().highlighted = true;
-                });
+              } else {
+                // Remove class just incase more than one item is currently highlighted
+                cElement.removeClass(ctrl.hlClass);
+                // Highlight the first item in the group
+                element.find('[hl-item]:visible').first().addClass(ctrl.hlClass);
               }
-              $element.find('[hl-item]:hidden').each(function (i, el) {
-                $scope.$apply(function () {
-                  angular.element(el).scope().highlighted = false;
-                });
-              });
-              //for (i = ctrl.items.length - 1; i >= 0; i--) {
-                //if (ctrl.items[i].highlighted) {
-                  //found = true;
-                  //if (i < ctrl.items.length - 1) {
-                    //$scope.$apply(function () {
-                      //ctrl.items[i + 1].highlighted = true;
-                      //ctrl.items[i].highlighted = false;
-                    //});
-                  //}
-                  //break;
-                //}
-              //}
-              //if (!found) {
-                //$scope.$apply(function () {
-                  //ctrl.items[0].highlighted = true;
-                //});
-              //}
               return false;
           }
         }
@@ -136,40 +54,51 @@ angular.module('HlGroup', [])
       }
     };
   })
-
-  .directive('hlItem', function ($http) {
-
+  
+  .directive('hlClass', function ($http) {
     return {
       restrict: 'A',
-      scope: true,
+      require: 'hlGroup',
+      priority: 8,
+      link: function (scope, element, attrs, ctrl) {
+        ctrl.hlClass = attrs.hlClass || 'highlight';
+      }
+    }
+  })
+
+  .directive('hlItem', function ($http) {
+    return {
+      restrict: 'A',
       require: '^hlGroup',
-      link: function ($scope, $element, attrs, grpCtrl) {
-        $scope.highlighted = false;
-        grpCtrl.addItem($scope, $element);
-        $scope.$on('$destroy', function (e) {
-          grpCtrl.removeItem($scope, $element);
+      link: function (scope, element, attrs, grpCtrl) {
+        element.on('mouseover', function (e) {
+          element.closest('[hl-group]').find('[hl-item]').removeClass(grpCtrl.hlClass);
+          angular.element(this).addClass(grpCtrl.hlClass);
+        });
+        scope.$on('$destroy', function (e) {
+          element.off('mouseover');
         });
       }
     };
   })
 
   .directive('hlSelect', function ($http) {
-
     return {
       restrict: 'A',
-      link: function ($scope, $element, attrs) {
+      require: '^hlGroup',
+      link: function (scope, element, attrs, grpCtrl) {
         function select () {
-          $scope.$apply(function () {
-            $scope.$eval(attrs.hlSelect);
+          scope.$apply(function () {
+            scope.$eval(attrs.hlSelect);
           });
         }
 
-        $element.on('click', select);
+        element.on('click', select);
 
         $('body').on('keydown', function (e) {
           // Enter/return key
           if (e.which === 13) {
-            if ($scope.highlighted) select();
+            if (element.hasClass(grpCtrl.hlClass)) select();
             return false;
           }
         });
