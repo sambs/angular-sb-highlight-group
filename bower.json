@@ -1,6 +1,7 @@
 {
   "name": "tag-input",
   "version": "0.0.0",
+  "main": "src/hl-group.js",
   "dependencies": {
     "jquery": "~1.9.1",
     "angular": "~1.0.5"

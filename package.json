@@ -9,7 +9,7 @@
     "grunt-karma": "~0.4.4",
     "grunt-jsonlint": "~1.0.0"
   },
-  "main": "lib/hl-group.js",
+  "main": "src/hl-group.js",
   "scripts": {
     "test": "grunt test"
   },
