@@ -25,7 +25,7 @@ exclude = [];
 reporters = ['progress'];
 
 // web server port
-port = 8001;
+port = 8002;
 
 // cli runner port
 runnerPort = 9100;
