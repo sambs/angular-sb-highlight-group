@@ -90,6 +90,8 @@ angular.module('HlGroup', [])
       restrict: 'A',
       require: '^hlGroup',
       link: function (scope, element, attrs, grpCtrl) {
+        // Evaluate the expression
+        // Triggered by click or enter key if highlighted
         function select (e) {
           if (e) {
             e.preventDefault();
@@ -99,15 +101,21 @@ angular.module('HlGroup', [])
             scope.$eval(attrs.hlSelect);
           });
         }
-
-        element.on('click', select);
-
-        $('body').on('keydown', function (e) {
+        
+        function keyHandler (e) {
           // Enter/return key
           if (e.which === 13) {
             if (element.hasClass(grpCtrl.hlClass)) select(e);
             return false;
           }
+        }
+
+        element.on('click', select);
+        $('body').on('keydown', keyHandler);
+        
+        scope.$on('$destroy', function (e) {
+          element.off('click', select);
+          $('body').off('keydown', keyHandler);
         });
       }
     };
