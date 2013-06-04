@@ -10,7 +10,6 @@ angular.module('HlGroup', [])
       link: function (scope, element, attrs, ctrl) {
 
         function keyHandler (e) {
-          //if (!this.enabled) return;
           var index, cElement, hlItems;
 
           switch (e.which) {
@@ -63,7 +62,7 @@ angular.module('HlGroup', [])
       link: function (scope, element, attrs, ctrl) {
         ctrl.hlClass = attrs.hlClass || 'highlight';
       }
-    }
+    };
   })
 
   .directive('hlItem', function ($http) {
@@ -92,15 +91,20 @@ angular.module('HlGroup', [])
             scope.$eval(attrs.hlSelect);
           });
         }
-
-        element.on('click', select);
-
-        $('body').on('keydown', function (e) {
-          // Enter/return key
-          if (e.which === 13) {
-            if (element.hasClass(grpCtrl.hlClass)) select();
+        function keyHandler (e) {
+          // If Enter/return key pressed, is highlighted & is visible
+          if (e.which === 13 && element.hasClass(grpCtrl.hlClass) && element.is(':visible')) {
+            select(e);
             return false;
           }
+        }
+
+        element.on('click', select);
+        $('body').on('keydown', keyHandler);
+        
+        scope.$on('$destroy', function (e) {
+          element.off('click', select);
+          $('body').off('keydown', keyHandler);
         });
       }
     };
