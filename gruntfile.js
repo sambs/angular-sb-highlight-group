@@ -44,7 +44,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          port: 8000,
+          port: 8001,
           hostname: 'localhost',
           keepalive: true,
           base: '.'
@@ -52,7 +52,7 @@ module.exports = function(grunt) {
       },
       test: {
         options: {
-          port: 8000,
+          port: 8001,
           hostname: 'localhost',
           base: '.'
         }
@@ -73,6 +73,7 @@ module.exports = function(grunt) {
     'karma:develop',
     'watch'
   ]);
+  grunt.registerTask('dev', ['develop']);
 
   grunt.registerTask('test', [
     'jshint',

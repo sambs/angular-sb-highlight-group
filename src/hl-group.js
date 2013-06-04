@@ -13,7 +13,9 @@ angular.module('HlGroup', [])
           var index, cElement, hlItems;
 
           switch (e.which) {
+            
             case 38: // Up arrow
+
               cElement = element.find('.'+ctrl.hlClass+'[hl-item]');
               if (cElement.length == 1) {
                 hlItems = element.find('[hl-item]:visible');
@@ -31,6 +33,7 @@ angular.module('HlGroup', [])
               return false;
               
             case 40: // Down arrow
+
               cElement = element.find('.'+ctrl.hlClass+'[hl-item]');
               if (cElement.length == 1) {
                 hlItems = element.find('[hl-item]:visible');
@@ -86,7 +89,13 @@ angular.module('HlGroup', [])
       restrict: 'A',
       require: '^hlGroup',
       link: function (scope, element, attrs, grpCtrl) {
-        function select () {
+        // Evaluate the expression
+        // Triggered by click or enter key if highlighted
+        function select (e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
           scope.$apply(function () {
             scope.$eval(attrs.hlSelect);
           });
