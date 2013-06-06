@@ -2,7 +2,7 @@ describe('Directive: hlGroup', function () {
   var el, scope;
 
   // load the tabs code
-  beforeEach(module('HlGroup'));
+  beforeEach(module('highlightGroup'));
 
   beforeEach(inject(function($rootScope, $compile) {
     el = angular.element(

@@ -1,4 +1,4 @@
-angular.module('HlGroup', [])
+angular.module('highlightGroup', [])
 
   .directive('hlGroup', function ($http) {
     return {

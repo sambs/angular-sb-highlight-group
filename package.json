@@ -1,5 +1,5 @@
 {
-  "name": "hl-group",
+  "name": "angular-highlight-group",
   "version": "0.0.1",
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -9,7 +9,7 @@
     "grunt-karma": "~0.4.4",
     "grunt-jsonlint": "~1.0.0"
   },
-  "main": "src/hl-group.js",
+  "main": "src/highlight-group.js",
   "scripts": {
     "test": "grunt test"
   },
