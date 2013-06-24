@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:sambs/angular-highlight-group.git"
+    "url": "git@bitbucket.org:ivow/angular-highlight-group.git"
   },
   "author": "Sam Barnes",
   "license": "private",
