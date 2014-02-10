@@ -2,16 +2,11 @@
   "name": "angular-highlight-group",
   "version": "0.0.1",
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-connect": "~0.3.0",
-    "grunt-contrib-watch": "~0.4.0",
-    "grunt-karma": "~0.4.4",
-    "grunt-jsonlint": "~1.0.0"
+    "karma": "~0.10.9"
   },
   "main": "src/highlight-group.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "./node_modules/.bin/karma start --single-run karma.conf.js"
   },
   "repository": {
     "type": "git",
