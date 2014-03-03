@@ -6,79 +6,117 @@ angular.module('highlightGroup', [])
     return {
       restrict: 'A',
       controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
-        this.hlClass = attrs.hlClass || 'highlight';
-        this.addItem = function (item) {
+        var ctrl = this;
+
+        ctrl.hlClass = attrs.hlClass || 'highlight';
+
+        ctrl.addItem = function (item) {
           items.push(item); 
           items = items.sort(function (a, b) {
             return a.index - b.index;
           });
         };
-        this.removeItem = function (item) {
+
+        ctrl.removeItem = function (item) {
           items.slice(items.indexOf(item), 1); 
         };
-        this.highlightItem = function (item) {
+
+        ctrl.highlightItem = function (item) {
+          if (!ctrl.enabled) return;
           if (current) current.unhighlight();
           current = item;
           current.highlight();
         };
-        this.highlightNext = function () {
-          var visibleItems = this.getVisibleItems();
+
+        ctrl.highlightNext = function () {
+          if (!ctrl.enabled) return;
+          var items = ctrl.getVisibleItems();
           if (current) {
-            if (!visibleItems.length) {
+            if (!items.length) {
               current.unhighlight();
             } else {
-              var currentIndex = visibleItems.indexOf(current);
-              if (currentIndex == -1) this.highlightItem(visibleItems[0]);
-              else if (currentIndex < visibleItems.length-1) {
-                this.highlightItem(visibleItems[currentIndex+1]);
+              var currentIndex = items.indexOf(current);
+              if (currentIndex == -1) ctrl.highlightItem(items[0]);
+              else if (currentIndex < items.length-1) {
+                ctrl.highlightItem(items[currentIndex+1]);
               }
             }
           } else {
-            if (visibleItems.length) this.highlightItem(visibleItems[0]);
+            if (items.length) ctrl.highlightItem(items[0]);
           }
         };
-        this.highlightPrevious = function () {
-          var visibleItems = this.getVisibleItems();
+
+        ctrl.highlightPrevious = function () {
+          if (!ctrl.enabled) return;
+          var items = ctrl.getVisibleItems();
           if (current) {
-            if (!visibleItems.length) {
+            if (!items.length) {
               current.unhighlight();
             } else {
-              var currentIndex = visibleItems.indexOf(current);
-              if (currentIndex == -1) this.highlightItem(visibleItems[visibleItems.length-1]);
+              var currentIndex = items.indexOf(current);
+              if (currentIndex == -1) ctrl.highlightItem(items[items.length-1]);
               else if (currentIndex > 0) {
-                this.highlightItem(visibleItems[currentIndex-1]);
+                ctrl.highlightItem(items[currentIndex-1]);
               }
             }
           } else {
-            if (visibleItems.length) this.highlightItem(visibleItems[visibleItems.length-1]);
+            if (items.length) ctrl.highlightItem(items[items.length-1]);
           }
         };
-        this.select = function () {
-          if (current && current.isVisible()) current.select();
+
+        ctrl.select = function () {
+          if (!ctrl.enabled) return;
+          if (current && current.isVisible()) ctrl.selectItem(current);
         };
-        this.getVisibleItems = function () {
+
+        ctrl.selectItem = function (item) {
+          if (!ctrl.enabled) return;
+          item.select();
+        };
+
+        ctrl.getVisibleItems = function () {
           return items.filter(function (item) {
             return item.isVisible();
           });
         };
-      }], 
-      link: function (scope, element, attrs, ctrl) {
 
-        function keyHandler (e) {
+        ctrl.enable = function () {
+          ctrl.enabled = true;
+          $document.on('keydown', ctrl.keyHandler);
+          if (ctrl.autoselect) {
+            var items = ctrl.getVisibleItems();
+            if (items.length) this.highlightItem(items[0]);
+          }
+        };
+
+        ctrl.disable = function () {
+          ctrl.enabled = false;
+          $document.off('keydown', ctrl.keyHandler);
+          if (current) current.unhighlight();
+        };
+
+        ctrl.keyHandler = function (e) {
           switch (e.which) {
             case 38: // Up arrow
+              e.preventDefault();
               ctrl.highlightPrevious();
-              return false;
+              break;
             case 40: // Down arrow
+              e.preventDefault();
               ctrl.highlightNext();
-              return false;
+              break;
             case 13: // Return key
+              e.preventDefault();
               ctrl.select();
-              return false;
           }
-        }
-
-        $document.on('keydown', keyHandler);
+        };
+      }], 
+      link: function (scope, element, attrs, ctrl) {
+        scope.$watch(attrs.hlDisabled, function (val) {
+          if (!val || typeof val == 'undefined') ctrl.enable();
+          else ctrl.disable();
+        });
+        ctrl.autoselect = 'hlAutoselect' in attrs;
       }
     };
   }])
@@ -116,7 +154,7 @@ angular.module('highlightGroup', [])
           group.highlightItem(ctrl);
         });
         elem.on('click', function (e) {
-          ctrl.select();
+          group.selectItem(ctrl);
         });
 
         // Cleanup
@@ -125,95 +163,4 @@ angular.module('highlightGroup', [])
         });
       }
     };
-  }])
-
-  .directive('hlGroupO', function ($http) {
-    return {
-      restrict: 'A',
-      priority: 9,
-      controller: function () {}, 
-      link: function (scope, element, attrs, ctrl) {
-        ctrl.hlClass = attrs.hlClass || highlight;
-
-        function keyHandler (e) {
-          var index, cElement, hlItems;
-
-          switch (e.which) {
-            
-            case 38: // Up arrow
-
-              cElement = element.find('.'+ctrl.hlClass+'[hl-item]');
-              if (cElement.length == 1) {
-                hlItems = element.find('[hl-item]:visible');
-                index = hlItems.index(cElement);
-                if (index > 0) {
-                  cElement.removeClass(ctrl.hlClass);
-                  hlItems.eq(index - 1).addClass(ctrl.hlClass);
-                }
-              } else {
-                // Remove class just incase more than one item is currently highlighted
-                cElement.removeClass(ctrl.hlClass);
-                // Highlight the last item in the group
-                element.find('[hl-item]:visible').last().addClass(ctrl.hlClass);
-              }
-              return false;
-              
-            case 40: // Down arrow
-
-              cElement = element.find('.'+ctrl.hlClass+'[hl-item]');
-              if (cElement.length == 1) {
-                hlItems = element.find('[hl-item]:visible');
-                index = hlItems.index(cElement);
-                if (index < hlItems.length - 1) {
-                  cElement.removeClass(ctrl.hlClass);
-                  hlItems.eq(index + 1).addClass(ctrl.hlClass);
-                }
-              } else {
-                // Remove class just incase more than one item is currently highlighted
-                cElement.removeClass(ctrl.hlClass);
-                // Highlight the first item in the group
-                element.find('[hl-item]:visible').first().addClass(ctrl.hlClass);
-              }
-              return false;
-          }
-        }
-
-        $('body').on('keydown', keyHandler);
-      }
-    };
-  })
-
-  .directive('hlSelectO', function ($http) {
-    return {
-      restrict: 'A',
-      require: '^hlGroup',
-      link: function (scope, element, attrs, grpCtrl) {
-        // Evaluate the expression
-        // Triggered by click or enter key if highlighted
-        function select (e) {
-          if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          scope.$apply(function () {
-            scope.$eval(attrs.hlSelect);
-          });
-        }
-        function keyHandler (e) {
-          // If Enter/return key pressed, is highlighted & is visible
-          if (e.which === 13 && element.hasClass(grpCtrl.hlClass) && element.is(':visible')) {
-            select(e);
-            return false;
-          }
-        }
-
-        element.on('click', select);
-        $('body').on('keydown', keyHandler);
-        
-        scope.$on('$destroy', function (e) {
-          element.off('click', select);
-          $('body').off('keydown', keyHandler);
-        });
-      }
-    };
-  });
+  }]);

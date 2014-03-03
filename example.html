@@ -10,12 +10,13 @@
   <script>
     angular.module('app', ['highlightGroup']).
     controller('Controller', function ($scope) {
+      $scope.enabled = true;
       $scope.showOther = true;
       $scope.choices = ['bread', 'butter', 'both'];
-      onSelect = function (choice) {
+      $scope.onSelect = function (choice) {
         window.alert(choice);
       }
-      otherOption = function () {
+      $scope.otherOption = function () {
         window.alert('other');
       }
     });
@@ -37,13 +38,14 @@
 </head>
 <body>
   <div ng-controller="Controller">
-    <div hl-group>
+    <div hl-group hl-disabled="!enabled">
       <ul>
         <li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>
       </ul>
       <span hl-index="100" hl-select="otherOption()" ng-show="showOther">other option</span>
     </div>
     <br>
+    <label><input type="checkbox" ng-model="enabled"> enabled</label>
     <label><input type="checkbox" ng-model="showOther"> show other</label>
   </div>
 </body>
