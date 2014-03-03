@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="utf-8">
+  <title>Highlight Group Demo</title>
+  <script src="/bower_components/jquery/jquery.js"></script>
+  <script src="/bower_components/angular/angular.js"></script>
+  <!--<script src="/bower_components/angular-mocks/angular-mocks.js"></script>-->
+  <script src="/src/highlight-group.js"></script>
+  <script>
+    angular.module('app', ['highlightGroup']).
+    controller('Controller', function ($scope) {
+      $scope.showOther = true;
+      $scope.choices = ['bread', 'butter', 'both'];
+      onSelect = function (choice) {
+        window.alert(choice);
+      }
+      otherOption = function () {
+        window.alert('other');
+      }
+    });
+  </script>
+  <style>
+    body, input {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+    }
+    .highlight {
+      background-color: red;
+      color: white;
+    }
+    li, span {
+      width: 100px;
+    }
+  </style>
+
+</head>
+<body>
+  <div ng-controller="Controller">
+    <div hl-group>
+      <ul>
+        <li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>
+      </ul>
+      <span hl-index="100" hl-select="otherOption()" ng-show="showOther">other option</span>
+    </div>
+    <br>
+    <label><input type="checkbox" ng-model="showOther"> show other</label>
+  </div>
+</body>
+</html>

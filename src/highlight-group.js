@@ -1,13 +1,139 @@
 angular.module('highlightGroup', [])
 
-  .directive('hlGroup', function ($http) {
+  .directive('hlGroup', ['$document', function ($document) {
+    var items = [];
+    var current;
+    return {
+      restrict: 'A',
+      controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
+        this.hlClass = attrs.hlClass || 'highlight';
+        this.addItem = function (item) {
+          items.push(item); 
+          items = items.sort(function (a, b) {
+            return a.index - b.index;
+          });
+        };
+        this.removeItem = function (item) {
+          items.slice(items.indexOf(item), 1); 
+        };
+        this.highlightItem = function (item) {
+          if (current) current.unhighlight();
+          current = item;
+          current.highlight();
+        };
+        this.highlightNext = function () {
+          var visibleItems = this.getVisibleItems();
+          if (current) {
+            if (!visibleItems.length) {
+              current.unhighlight();
+            } else {
+              var currentIndex = visibleItems.indexOf(current);
+              if (currentIndex == -1) this.highlightItem(visibleItems[0]);
+              else if (currentIndex < visibleItems.length-1) {
+                this.highlightItem(visibleItems[currentIndex+1]);
+              }
+            }
+          } else {
+            if (visibleItems.length) this.highlightItem(visibleItems[0]);
+          }
+        };
+        this.highlightPrevious = function () {
+          var visibleItems = this.getVisibleItems();
+          if (current) {
+            if (!visibleItems.length) {
+              current.unhighlight();
+            } else {
+              var currentIndex = visibleItems.indexOf(current);
+              if (currentIndex == -1) this.highlightItem(visibleItems[visibleItems.length-1]);
+              else if (currentIndex > 0) {
+                this.highlightItem(visibleItems[currentIndex-1]);
+              }
+            }
+          } else {
+            if (visibleItems.length) this.highlightItem(visibleItems[visibleItems.length-1]);
+          }
+        };
+        this.select = function () {
+          if (current && current.isVisible()) current.select();
+        };
+        this.getVisibleItems = function () {
+          return items.filter(function (item) {
+            return item.isVisible();
+          });
+        };
+      }], 
+      link: function (scope, element, attrs, ctrl) {
+
+        function keyHandler (e) {
+          switch (e.which) {
+            case 38: // Up arrow
+              ctrl.highlightPrevious();
+              return false;
+            case 40: // Down arrow
+              ctrl.highlightNext();
+              return false;
+            case 13: // Return key
+              ctrl.select();
+              return false;
+          }
+        }
+
+        $document.on('keydown', keyHandler);
+      }
+    };
+  }])
+
+  .directive('hlIndex', ['$animate', function ($animate) {
+    return {
+      restrict: 'A',
+      require: ['^hlGroup', 'hlIndex'],
+      controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
+        this.select = function () {
+          scope.$eval(attrs.hlSelect);
+        };
+      }], 
+      link: function (scope, elem, attrs, ctrls) {
+        var group = ctrls[0];
+        var ctrl = ctrls[1];
+
+        // Prepare the controller;
+        ctrl.index = parseInt(attrs.hlIndex, 10);
+        ctrl.highlight = function () {
+          $animate.addClass(elem, group.hlClass);
+        };
+        ctrl.unhighlight = function () {
+          $animate.removeClass(elem, group.hlClass);
+        };
+        ctrl.isVisible = function () {
+          return !elem.hasClass('ng-hide');
+        };
+
+        // Add to group controller
+        group.addItem(ctrl);
+
+        // Setup event listeners
+        elem.on('mouseover', function (e) {
+          group.highlightItem(ctrl);
+        });
+        elem.on('click', function (e) {
+          ctrl.select();
+        });
+
+        // Cleanup
+        scope.$on('$destroy', function (e) {
+          group.removeItem(ctrl);
+        });
+      }
+    };
+  }])
+
+  .directive('hlGroupO', function ($http) {
     return {
       restrict: 'A',
       priority: 9,
-      controller: function () {
-        this.hlClass = 'highlight';
-      }, 
+      controller: function () {}, 
       link: function (scope, element, attrs, ctrl) {
+        ctrl.hlClass = attrs.hlClass || highlight;
 
         function keyHandler (e) {
           var index, cElement, hlItems;
@@ -56,35 +182,8 @@ angular.module('highlightGroup', [])
       }
     };
   })
-  
-  .directive('hlClass', function ($http) {
-    return {
-      restrict: 'A',
-      require: 'hlGroup',
-      priority: 8,
-      link: function (scope, element, attrs, ctrl) {
-        ctrl.hlClass = attrs.hlClass || 'highlight';
-      }
-    };
-  })
 
-  .directive('hlItem', function ($http) {
-    return {
-      restrict: 'A',
-      require: '^hlGroup',
-      link: function (scope, element, attrs, grpCtrl) {
-        element.on('mouseover', function (e) {
-          element.closest('[hl-group]').find('[hl-item]').removeClass(grpCtrl.hlClass);
-          angular.element(this).addClass(grpCtrl.hlClass);
-        });
-        scope.$on('$destroy', function (e) {
-          element.off('mouseover');
-        });
-      }
-    };
-  })
-
-  .directive('hlSelect', function ($http) {
+  .directive('hlSelectO', function ($http) {
     return {
       restrict: 'A',
       require: '^hlGroup',
