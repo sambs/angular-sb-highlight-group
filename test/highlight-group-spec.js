@@ -123,6 +123,21 @@ describe('hlGroup directive', function () {
       expect(scope.onSelect).toHaveBeenCalledWith('b');
       expect(scope.onSelect.calls.length).toBe(1);
     });
+
+    it('shouldnt select previously highlighted item after removal', function () {
+      el.find('li').eq(0).trigger('mouseover');
+      scope.$apply(function () { scope.choices = ['c', 'd']; });
+      sendKey('return');
+      expect(scope.onSelect).not.toHaveBeenCalled();
+    });
+     
+    it('should work after items have been changed', function () {
+      scope.$apply(function () { scope.choices = ['c', 'd']; });
+      sendKey('down');
+      sendKey('return');
+      expect(el.find('li').eq(0)).toHaveClass('highlight');
+      expect(el.find('li').eq(0).text()).toEqual('c');
+    });
   });
 
   describe('with hlDisabled attr', function () {

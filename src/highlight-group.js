@@ -18,7 +18,8 @@ angular.module('highlightGroup', [])
         };
 
         ctrl.removeItem = function (item) {
-          items.slice(items.indexOf(item), 1); 
+          items.splice(items.indexOf(item), 1);
+          if (item === current) current = undefined;
         };
 
         ctrl.highlightItem = function (item) {
@@ -64,14 +65,12 @@ angular.module('highlightGroup', [])
           }
         };
 
-        ctrl.select = function () {
-          if (!ctrl.enabled) return;
-          if (current && current.isVisible()) ctrl.selectItem(current);
+        ctrl.selectCurrent = function () {
+          if (ctrl.enabled && current && current.isVisible()) ctrl.selectItem(current);
         };
 
         ctrl.selectItem = function (item) {
-          if (!ctrl.enabled) return;
-          item.select();
+          if (ctrl.enabled) item.select();
         };
 
         ctrl.getVisibleItems = function () {
@@ -99,15 +98,21 @@ angular.module('highlightGroup', [])
           switch (e.which) {
             case 38: // Up arrow
               e.preventDefault();
-              ctrl.highlightPrevious();
+              scope.$apply(function () {
+                ctrl.highlightPrevious();
+              });
               break;
             case 40: // Down arrow
               e.preventDefault();
-              ctrl.highlightNext();
+              scope.$apply(function () {
+                ctrl.highlightNext();
+              });
               break;
             case 13: // Return key
               e.preventDefault();
-              ctrl.select();
+              scope.$apply(function () {
+                ctrl.selectCurrent();
+              });
           }
         };
       }], 
@@ -151,10 +156,14 @@ angular.module('highlightGroup', [])
 
         // Setup event listeners
         elem.on('mouseover', function (e) {
-          group.highlightItem(ctrl);
+          scope.$apply(function () {
+            group.highlightItem(ctrl);
+          });
         });
         elem.on('click', function (e) {
-          group.selectItem(ctrl);
+          scope.$apply(function () {
+            group.selectItem(ctrl);
+          });
         });
 
         // Cleanup
