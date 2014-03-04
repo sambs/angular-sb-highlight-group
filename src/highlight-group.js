@@ -1,41 +1,43 @@
+/* jshint browser: true, es3: true */
+
 angular.module('highlightGroup', [])
 
   .directive('hlGroup', ['$document', function ($document) {
-    var items = [];
-    var current;
     return {
       restrict: 'A',
       controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
         var ctrl = this;
 
+        ctrl.items = [];
+
         ctrl.hlClass = attrs.hlClass || 'highlight';
 
         ctrl.addItem = function (item) {
-          items.push(item); 
-          items = items.sort(function (a, b) {
+          ctrl.items.push(item); 
+          ctrl.items = ctrl.items.sort(function (a, b) {
             return a.index - b.index;
           });
-          if (ctrl.autoselect) ctrl.highlightFirst();
+          if (ctrl.autoHighlight) ctrl.highlightFirst();
         };
 
         ctrl.removeItem = function (item) {
-          items.splice(items.indexOf(item), 1);
-          if (item === current) current = undefined;
-          if (ctrl.autoselect) ctrl.highlightFirst();
+          ctrl.items.splice(ctrl.items.indexOf(item), 1);
+          if (item === ctrl.current) delete ctrl.current;
+          if (ctrl.autoHighlight) ctrl.highlightFirst();
         };
 
         ctrl.highlightItem = function (item) {
           if (!ctrl.enabled) return;
-          if (item === current) return;
-          if (current) current.unhighlight();
-          current = item;
-          current.highlight();
+          if (item === ctrl.current) return;
+          if (ctrl.current) ctrl.current.unhighlight();
+          ctrl.current = item;
+          ctrl.current.highlight();
         };
 
         ctrl.unhighlight = function (item) {
-          if (!current) return;
-          current.unhighlight();
-          current = undefined;
+          if (!ctrl.current) return;
+          ctrl.current.unhighlight();
+          delete ctrl.current;
         };
 
         ctrl.highlightFirst = function () {
@@ -47,11 +49,11 @@ angular.module('highlightGroup', [])
         ctrl.highlightNext = function () {
           if (!ctrl.enabled) return;
           var items = ctrl.getVisibleItems();
-          if (current) {
+          if (ctrl.current) {
             if (!items.length) {
               ctrl.unhighlight();
             } else {
-              var currentIndex = items.indexOf(current);
+              var currentIndex = items.indexOf(ctrl.current);
               if (currentIndex == -1) ctrl.highlightItem(items[0]);
               else if (currentIndex < items.length-1) {
                 ctrl.highlightItem(items[currentIndex+1]);
@@ -65,11 +67,11 @@ angular.module('highlightGroup', [])
         ctrl.highlightPrevious = function () {
           if (!ctrl.enabled) return;
           var items = ctrl.getVisibleItems();
-          if (current) {
+          if (ctrl.current) {
             if (!items.length) {
               ctrl.unhighlight();
             } else {
-              var currentIndex = items.indexOf(current);
+              var currentIndex = items.indexOf(ctrl.current);
               if (currentIndex == -1) ctrl.highlightItem(items[items.length-1]);
               else if (currentIndex > 0) {
                 ctrl.highlightItem(items[currentIndex-1]);
@@ -81,7 +83,7 @@ angular.module('highlightGroup', [])
         };
 
         ctrl.selectCurrent = function () {
-          if (ctrl.enabled && current && current.isVisible()) ctrl.selectItem(current);
+          if (ctrl.enabled && ctrl.current && ctrl.current.isVisible()) ctrl.selectItem(ctrl.current);
         };
 
         ctrl.selectItem = function (item) {
@@ -89,7 +91,7 @@ angular.module('highlightGroup', [])
         };
 
         ctrl.getVisibleItems = function () {
-          return items.filter(function (item) {
+          return ctrl.items.filter(function (item) {
             return item.isVisible();
           });
         };
@@ -97,13 +99,13 @@ angular.module('highlightGroup', [])
         ctrl.enable = function () {
           ctrl.enabled = true;
           $document.on('keydown', ctrl.keyHandler);
-          if (ctrl.autoselect) ctrl.highlightFirst();
+          if (ctrl.autoHighlight) ctrl.highlightFirst();
         };
 
         ctrl.disable = function () {
           ctrl.enabled = false;
           $document.off('keydown', ctrl.keyHandler);
-          if (current) ctrl.unhighlight();
+          if (ctrl.current) ctrl.unhighlight();
         };
 
         ctrl.keyHandler = function (e) {
@@ -133,7 +135,7 @@ angular.module('highlightGroup', [])
           if (!val || typeof val == 'undefined') ctrl.enable();
           else ctrl.disable();
         });
-        ctrl.autoselect = 'hlAutoselect' in attrs;
+        ctrl.autoHighlight = 'hlAutoHighlight' in attrs;
       }
     };
   }])

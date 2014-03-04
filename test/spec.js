@@ -196,12 +196,12 @@ describe('hlGroup directive', function () {
     });
   });
 
-  describe('with autoselect attr', function () {
+  describe('with auto-highlight attr', function () {
 
     beforeEach(inject(function($rootScope, $compile, $document) {
       init({
         template: 
-          '<div hl-group hl-disabled="disabled" hl-autoselect>' +
+          '<div hl-group hl-disabled="disabled" hl-auto-highlight>' +
             '<ul>' +
               '<li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>' +
             '</ul>' +

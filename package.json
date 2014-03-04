@@ -6,7 +6,7 @@
   },
   "main": "src/highlight-group.js",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run karma.conf.js"
+    "test": "./node_modules/.bin/karma start --single-run test/conf.js"
   },
   "repository": {
     "type": "git",
