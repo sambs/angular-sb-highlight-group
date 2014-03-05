@@ -1,5 +1,5 @@
 {
-  "name": "angular-highlight-group",
+  "name": "angular-sb-highlight-group",
   "version": "0.1.0",
   "devDependencies": {
     "karma": "~0.10.9"
@@ -10,9 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:ivow/angular-highlight-group.git"
+    "url": "git@github.com:sambs/angular-sb-highlight-group.git"
   },
   "author": "Sam Barnes",
-  "license": "private",
+  "license": "MIT",
   "readmeFilename": "Readme.md"
 }

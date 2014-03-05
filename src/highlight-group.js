@@ -1,8 +1,9 @@
 /* jshint browser: true, es3: true */
 
-angular.module('highlightGroup', [])
+angular.module('sbHighlightGroup', [])
 
-  .directive('hlGroup', ['$document', function ($document) {
+  .directive('sbHighlightGroup', ['$document', function ($document) {
+
     return {
       restrict: 'A',
       controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
@@ -10,7 +11,7 @@ angular.module('highlightGroup', [])
 
         ctrl.items = [];
 
-        ctrl.hlClass = attrs.hlClass || 'highlight';
+        ctrl.highlightClass = attrs.sbHighlightClass || 'highlight';
 
         ctrl.addItem = function (item) {
           ctrl.items.push(item); 
@@ -131,22 +132,22 @@ angular.module('highlightGroup', [])
         };
       }], 
       link: function (scope, element, attrs, ctrl) {
-        scope.$watch(attrs.hlDisabled, function (val) {
+        scope.$watch(attrs.sbDisabled, function (val) {
           if (!val || typeof val == 'undefined') ctrl.enable();
           else ctrl.disable();
         });
-        ctrl.autoHighlight = 'hlAutoHighlight' in attrs;
+        ctrl.autoHighlight = 'sbAutoHighlight' in attrs;
       }
     };
   }])
 
-  .directive('hlIndex', ['$animate', function ($animate) {
+  .directive('sbHighlightIndex', ['$animate', function ($animate) {
     return {
       restrict: 'A',
-      require: ['^hlGroup', 'hlIndex'],
+      require: ['^sbHighlightGroup', 'sbHighlightIndex'],
       controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
         this.select = function () {
-          scope.$eval(attrs.hlSelect);
+          scope.$eval(attrs.sbHighlightSelect);
         };
       }], 
       link: function (scope, elem, attrs, ctrls) {
@@ -154,12 +155,12 @@ angular.module('highlightGroup', [])
         var ctrl = ctrls[1];
 
         // Prepare the controller;
-        ctrl.index = parseInt(attrs.hlIndex, 10);
+        ctrl.index = parseInt(attrs.sbHighlightIndex, 10);
         ctrl.highlight = function () {
-          $animate.addClass(elem, group.hlClass);
+          $animate.addClass(elem, group.highlightClass);
         };
         ctrl.unhighlight = function () {
-          $animate.removeClass(elem, group.hlClass);
+          $animate.removeClass(elem, group.highlightClass);
         };
         ctrl.isVisible = function () {
           return !elem.hasClass('ng-hide');

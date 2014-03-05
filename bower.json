@@ -1,12 +1,12 @@
 {
-  "name": "angular-highlight-group",
+  "name": "angular-sb-highlight-group",
   "version": "0.1.0",
   "main": "src/highlight-group.js",
   "dependencies": {
-    "jquery": "~1.9.1",
     "angular": "~1.2.0"
   },
   "devDependencies": {
+    "jquery": "~1.9.1",
     "angular-mocks": "~1.2.0"
   }
 }

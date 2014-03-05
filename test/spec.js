@@ -2,7 +2,7 @@ describe('hlGroup directive', function () {
   var init, el, scope, document, sendKey;
 
   // load the tabs code
-  beforeEach(module('highlightGroup'));
+  beforeEach(module('sbHighlightGroup'));
 
   beforeEach(inject(function($rootScope, $compile, $document) {
     init = function (options) {
@@ -29,11 +29,11 @@ describe('hlGroup directive', function () {
 
     beforeEach(function() {
       init({
-        template: '<div hl-group>' +
+        template: '<div sb-highlight-group>' +
           '<ul>' +
-            '<li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>' +
+            '<li ng-repeat="choice in choices" ng-bind="choice" sb-highlight-index="{{$index}}" sb-highlight-select="onSelect(choice)"></li>' +
           '</ul>' +
-          '<span hl-index="100" hl-select="otherOption()" ng-show="showOther">other option</span>' +
+          '<span sb-highlight-index="100" sb-highlight-select="otherOption()" ng-show="showOther">other option</span>' +
         '</div>', 
         scope: {
           choices: ['a', 'b'],
@@ -111,13 +111,13 @@ describe('hlGroup directive', function () {
       expect(el.find('.highlight').length).toBe(1);
     });
      
-    it('should call hl-select on click', function () {
+    it('should evaluate select attr on click', function () {
       el.find('li').first().trigger('click');
       expect(scope.onSelect).toHaveBeenCalledWith('a');
       expect(scope.onSelect.calls.length).toBe(1);
     });
     
-    it('should call hl-select on return key press', function () {
+    it('should evaluate select attr on return key press', function () {
       el.find('li').eq(1).trigger('mouseover');
       sendKey('return');
       expect(scope.onSelect).toHaveBeenCalledWith('b');
@@ -140,16 +140,16 @@ describe('hlGroup directive', function () {
     });
   });
 
-  describe('with hlDisabled attr', function () {
+  describe('with disabled attr', function () {
 
     beforeEach(inject(function($rootScope, $compile, $document) {
       init({
         template:
-        '<div hl-group hl-disabled="disabled">' +
+        '<div sb-highlight-group sb-disabled="disabled">' +
           '<ul>' +
-            '<li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>' +
+            '<li ng-repeat="choice in choices" ng-bind="choice" sb-highlight-index="{{$index}}" sb-highlight-select="onSelect(choice)"></li>' +
           '</ul>' +
-          '<span hl-index="100" hl-select="otherOption()" ng-show="showOther">other option</span>' +
+          '<span sb-highlight-index="100" sb-highlight-select="otherOption()" ng-show="showOther">other option</span>' +
         '</div>', 
         scope: {
           disabled: true,
@@ -201,9 +201,9 @@ describe('hlGroup directive', function () {
     beforeEach(inject(function($rootScope, $compile, $document) {
       init({
         template: 
-          '<div hl-group hl-disabled="disabled" hl-auto-highlight>' +
+          '<div sb-highlight-group sb-disabled="disabled" sb-auto-highlight>' +
             '<ul>' +
-              '<li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>' +
+              '<li ng-repeat="choice in choices" ng-bind="choice" sb-highlight-index="{{$index}}" sb-highlight-select="onSelect(choice)"></li>' +
             '</ul>' +
           '</div>', 
         scope: {

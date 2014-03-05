@@ -3,23 +3,22 @@
 <head>
   <meta charset="utf-8">
   <title>Highlight Group Demo</title>
-  <script src="/bower_components/jquery/jquery.js"></script>
-  <script src="/bower_components/angular/angular.js"></script>
-  <!--<script src="/bower_components/angular-mocks/angular-mocks.js"></script>-->
-  <script src="/src/highlight-group.js"></script>
+  <script src="bower_components/jquery/jquery.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="src/highlight-group.js"></script>
   <script>
-    angular.module('app', ['highlightGroup']).
-    controller('Controller', function ($scope) {
-      $scope.enabled = true;
-      $scope.showOther = true;
-      $scope.choices = ['bread', 'butter', 'both'];
-      $scope.onSelect = function (choice) {
-        window.alert(choice);
-      }
-      $scope.otherOption = function () {
-        window.alert('other');
-      }
-    });
+    angular.module('app', ['sbHighlightGroup'])
+      .controller('Controller', function ($scope) {
+        $scope.enabled = true;
+        $scope.showOther = true;
+        $scope.choices = ['bread', 'butter', 'both'];
+        $scope.onSelect = function (choice) {
+          window.alert(choice);
+        }
+        $scope.otherOption = function () {
+          window.alert('other');
+        }
+      });
   </script>
   <style>
     body, input {
@@ -37,12 +36,14 @@
 
 </head>
 <body>
+  <p>Highlight items by hovering or pressing your up and down keys.</p>
+  <p>Trigger a helpful pop by clicking on an item or pressing return.</p>
   <div ng-controller="Controller">
-    <div hl-group hl-disabled="!enabled">
+    <div sb-highlight-group sb-disabled="!enabled">
       <ul>
-        <li ng-repeat="choice in choices" ng-bind="choice" hl-index="{{$index}}" hl-select="onSelect(choice)"></li>
+        <li ng-repeat="choice in choices" ng-bind="choice" sb-highlight-index="{{$index}}" sb-highlight-select="onSelect(choice)"></li>
       </ul>
-      <span hl-index="100" hl-select="otherOption()" ng-show="showOther">other option</span>
+      <span sb-highlight-index="100" sb-highlight-select="otherOption()" ng-show="showOther">other option</span>
     </div>
     <br>
     <label><input type="checkbox" ng-model="enabled"> enabled</label>
