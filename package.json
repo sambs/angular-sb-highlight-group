@@ -1,6 +1,6 @@
 {
   "name": "angular-sb-highlight-group",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "devDependencies": {
     "karma": "~0.10.9"
   },
