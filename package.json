@@ -6,7 +6,7 @@
   },
   "main": "src/highlight-group.js",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run test/conf.js"
+    "test": "node_modules/.bin/karma start test/conf.js --single-run --browsers Firefox"
   },
   "repository": {
     "type": "git",
